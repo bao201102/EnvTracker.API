@@ -164,7 +164,7 @@ namespace EnvTracker.Application.Services.Implements.STA
                 var lstValueTime = await result.ReadAsync<StationChartRes>();
                 var lstSensorValue = await result.ReadAsync<StationChartSensorValues>();
 
-                if (lstValueTime == null || !lstValueTime.Any() || lstSensorValue == null || !lstSensorValue.Any())
+                if (lstValueTime == null || !lstValueTime.Any())
                 {
                     return Error<IEnumerable<StationChartRes>>(statusCode: CRUDStatusCodeRes.ResourceNotFound);
                 }

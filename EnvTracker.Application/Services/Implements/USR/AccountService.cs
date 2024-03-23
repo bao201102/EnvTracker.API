@@ -27,7 +27,7 @@ namespace EnvTracker.Application.Services.Implements.USR
         {
             try
             {
-                if (!StringExtensions.IsValidEmail(obj.email))
+                if (!string.IsNullOrEmpty(obj.email) && !StringExtensions.IsValidEmail(obj.email))
                 {
                     return Error<bool>(statusCode: CRUDStatusCodeRes.InvalidData, errorMessage: "Email không hợp lệ");
                 }

@@ -1,71 +1,73 @@
 ﻿using EnvTracker.API.Common;
-using EnvTracker.Application.DTOs.Request.STA.SensorValue;
+using EnvTracker.Application.DTOs.Request.USR.Role;
+using EnvTracker.Application.DTOs.Request.USR.User;
 using EnvTracker.Application.DTOs.Response.Common;
-using EnvTracker.Application.DTOs.Response.STA.SensorValue;
-using EnvTracker.Application.Services.Interfaces.STA;
+using EnvTracker.Application.DTOs.Response.USR.Role;
+using EnvTracker.Application.DTOs.Response.USR.User;
+using EnvTracker.Application.Services.Interfaces.USR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EnvTracker.API.Controllers.STA
+namespace EnvTracker.API.Controllers.USR
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class SensorValuesController : BaseController
+    public class RolesController : BaseController
     {
-        private readonly ISensorValueService _service;
+        private readonly IRoleService _service;
 
-        public SensorValuesController(ISensorValueService service)
+        public RolesController(IRoleService service)
         {
             _service = service;
         }
 
         /// <summary>
-        /// Get Sensor value by Value Time Id
+        /// Get Role by id
         /// </summary>
         /// 2024-03-23 - BaoNN
-        /// <param name="valueTimeId"></param>
+        /// <param name="roleId"></param>
         /// <returns></returns>
-        [HttpGet("{valueTimeId}")]
-        [ProducesResponseType(200, Type = typeof(SensorValueReadByValueTimeIdRes))]
+        [HttpGet("{roleId}")]
+        [ProducesResponseType(200, Type = typeof(RoleRes))]
         [Authorize]
-        public async Task<IActionResult> ReadByValueTimeId(int valueTimeId)
+        public async Task<IActionResult> ReadById(int roleId)
         {
-            var result = await _service.ReadByValueTimeId(valueTimeId);
+            var result = await _service.ReadById(roleId);
             return ApiOK(result);
         }
 
         /// <summary>
-        /// Search Sensor Values
+        /// Search Role
         /// </summary>
-        /// 2024-03-14 - BaoNN
+        /// 2024-03-23 - BaoNN
         /// <param name="obj"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        [ProducesResponseType(200, Type = typeof(PagingResponse<SensorValueSearchRes>))]
+        [ProducesResponseType(200, Type = typeof(PagingResponse<RoleSearchRes>))]
         [Authorize]
-        public async Task<IActionResult> Search(SensorValueSearchReq obj)
+        public async Task<IActionResult> Search(RoleSearchReq obj)
         {
             var result = await _service.Search(obj);
             return ApiOK(result);
         }
 
         /// <summary>
-        /// Create Sensor Value
+        /// Create Role
         /// </summary>
-        /// 2024-03-14 - BaoNN
+        /// 2024-03-23 - BaoNN
         /// <param name="obj"></param>
         /// <returns></returns>
         [HttpPost("create")]
         [ProducesResponseType(200, Type = typeof(bool))]
         [Authorize]
-        public async Task<IActionResult> Create(SensorValueCreateReq obj)
+        public async Task<IActionResult> Create(RoleCreateReq obj)
         {
             var result = await _service.Create(obj);
             return ApiOK(result);
         }
 
         /// <summary>
-        /// Update Sensor Value
+        /// Update Role
         /// </summary>
         /// 2024-03-23 - BaoNN
         /// <param name="obj"></param>
@@ -73,24 +75,24 @@ namespace EnvTracker.API.Controllers.STA
         [HttpPut("update")]
         [ProducesResponseType(200, Type = typeof(bool))]
         [Authorize]
-        public async Task<IActionResult> Update(SensorValueUpdateReq obj)
+        public async Task<IActionResult> Update(RoleUpdateReq obj)
         {
             var result = await _service.Update(obj);
             return ApiOK(result);
         }
 
         /// <summary>
-        /// Delete Sensor Value
+        /// Delete Role
         /// </summary>
         /// 2024-03-23 - BaoNN
-        /// <param name="valueTimeId"></param>
+        /// <param name="roleId"></param>
         /// <returns></returns>
-        [HttpDelete("{valueTimeId}")]
+        [HttpDelete("{roleId}")]
         [ProducesResponseType(200, Type = typeof(bool))]
         [Authorize]
-        public async Task<IActionResult> Delete(int valueTimeId)
+        public async Task<IActionResult> Delete(int roleId)
         {
-            var result = await _service.Delete(valueTimeId);
+            var result = await _service.Delete(roleId);
             return ApiOK(result);
         }
     }
