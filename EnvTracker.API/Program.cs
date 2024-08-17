@@ -18,7 +18,7 @@ namespace EnvTracker.API
             builder.Services.AddControllers();
 
             // Register services to DI 
-            builder.Services.AddServices();
+            //builder.Services.AddServices();
             builder.ConfigureAutofacContainer();
 
             //Config endpoints router
