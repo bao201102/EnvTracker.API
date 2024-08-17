@@ -1,6 +1,5 @@
 ﻿using EnvTracker.API.Common;
 using EnvTracker.Application.DTOs.Response.USR.Permission;
-using EnvTracker.Application.DTOs.Response.USR.Role;
 using EnvTracker.Application.Services.Interfaces.USR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
