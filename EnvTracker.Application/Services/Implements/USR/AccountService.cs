@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using EnvTracker.Application.Common;
+using EnvTracker.Application.DTOs.Request.Public.ActivityLog;
 using EnvTracker.Application.DTOs.Request.USR.Account;
 using EnvTracker.Application.DTOs.Response.Common;
 using EnvTracker.Application.DTOs.Response.USR.Account;
+using EnvTracker.Application.Services.Interfaces.Public;
 using EnvTracker.Application.Services.Interfaces.USR;
 using EnvTracker.Application.Utilities;
 using EnvTracker.Domain.Entities;
@@ -16,8 +18,8 @@ namespace EnvTracker.Application.Services.Implements.USR
         private readonly ITokenService _tokenService;
         private readonly IRoleService _roleService;
 
-        public AccountService(IRepository repository, ITokenService jwtProvider, IRoleService roleService)
-            : base(repository)
+        public AccountService(IRepository repository, IActivityLogService activityLogService, ITokenService jwtProvider, IRoleService roleService)
+            : base(repository, activityLogService)
         {
             _tokenService = jwtProvider;
             _roleService = roleService;
@@ -42,12 +44,21 @@ namespace EnvTracker.Application.Services.Implements.USR
                 parameters.Add("p_last_name", obj.last_name);
                 parameters.Add("p_phone", obj.phone);
 
-                var result = await Repository.ExecuteStoredProcPgSql("usr.user_sign_up", parameters, "p_result");
+                var result = await Repository.QueryFirstStoredProcPgSql<int>("usr.user_sign_up", parameters, "p_result");
 
                 if (result < 1)
                 {
                     return Error<bool>(statusCode: CRUDStatusCodeRes.InvalidData, errorMessage: "Dữ liệu chưa được cập nhật");
                 }
+
+                //Log activity
+                await ActivityLog.Create(new ActivityLogCreateReq
+                {
+                    user_id = result,
+                    context = "AccountsController",
+                    action = "Registration",
+                    message = "New Registration"
+                });
 
                 return Success(true);
             }
@@ -77,6 +88,15 @@ namespace EnvTracker.Application.Services.Implements.USR
                 {
                     return Error<string>(statusCode: CRUDStatusCodeRes.InvalidData, errorMessage: "Email hoặc mật khẩu không đúng");
                 }
+
+                //Log activity
+                await ActivityLog.Create(new ActivityLogCreateReq
+                {
+                    user_id = result.user_id,
+                    context = "AccountsController",
+                    action = "Login",
+                    message = "User login"
+                });
 
                 var roles = await _roleService.List();
 

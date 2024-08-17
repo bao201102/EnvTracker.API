@@ -1,4 +1,5 @@
 ﻿using EnvTracker.Application.DTOs.Response.Common;
+using EnvTracker.Application.Services.Interfaces.Public;
 using EnvTracker.Application.Utilities;
 using EnvTracker.Domain.Interfaces;
 using static EnvTracker.Application.Utilities.Enum;
@@ -10,12 +11,21 @@ namespace EnvTracker.Application.Common
         private readonly IRepository _repository;
         protected IRepository Repository => _repository;
 
+        private readonly IActivityLogService _activityLog;
+        protected IActivityLogService ActivityLog => _activityLog;
+
         #region Constructor
         public BaseService() { }
 
         public BaseService(IRepository repository)
         {
             _repository = repository;
+        }
+
+        public BaseService(IRepository repository, IActivityLogService activityLog)
+        {
+            _repository = repository;
+            _activityLog = activityLog;
         }
 
         #endregion
@@ -94,6 +104,10 @@ namespace EnvTracker.Application.Common
                     if (_repository != null)
                     {
                         _repository.Dispose();
+                    }
+                    if (_activityLog != null)
+                    {
+                        _activityLog.Dispose();
                     }
                 }
                 _disposedValue = true;
