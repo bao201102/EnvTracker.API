@@ -1,5 +1,6 @@
 ﻿using EnvTracker.API.Common;
 using EnvTracker.Application.DTOs.Response.USR.Permission;
+using EnvTracker.Application.DTOs.Response.USR.Role;
 using EnvTracker.Application.Services.Interfaces.USR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,11 @@ namespace EnvTracker.API.Controllers.USR
             _service = service;
         }
 
+
         /// <summary>
-        /// Get all permission
+        /// Get all Permission
         /// </summary>
-        /// 2024-08-17 - BaoNN
+        /// 2024-07-24 - BaoNN
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<PermissionRes>))]
