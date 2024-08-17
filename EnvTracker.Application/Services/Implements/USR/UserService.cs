@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using EnvTracker.Application.Common;
-using EnvTracker.Application.DTOs.Request.STA.Sensor;
 using EnvTracker.Application.DTOs.Request.USR.User;
 using EnvTracker.Application.DTOs.Response.Common;
 using EnvTracker.Application.DTOs.Response.USR.User;
@@ -90,7 +89,7 @@ namespace EnvTracker.Application.Services.Implements.USR
                 param.Add("p_phone", obj.phone);
                 param.Add("p_email", obj.email);
                 param.Add("p_is_approved", obj.is_approved);
-                param.Add("p_role_id", obj.role_id);
+                param.Add("p_role_ids", obj.role_ids);
 
                 var result = await Repository.ExecuteStoredProcPgSql("usr.user_create", param, "p_result");
 
@@ -131,7 +130,7 @@ namespace EnvTracker.Application.Services.Implements.USR
                 param.Add("p_phone", obj.phone);
                 param.Add("p_email", obj.email);
                 param.Add("p_is_approved", obj.is_approved);
-                param.Add("p_role_id", obj.role_id);
+                param.Add("p_role_ids", obj.role_ids);
 
                 var result = await Repository.ExecuteStoredProcPgSql("usr.user_update", param, "p_result");
 

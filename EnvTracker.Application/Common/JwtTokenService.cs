@@ -2,6 +2,7 @@
 using EnvTracker.Domain.Entities;
 using EnvTracker.Domain.Interfaces;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -34,7 +35,8 @@ namespace EnvTracker.Application.Common
                     new Claim(ClaimTypes.Name, obj.full_name),
                     new Claim(ClaimTypes.MobilePhone, obj.phone),
                     new Claim(ClaimTypes.Sid, obj.user_id.ToString()),
-                    new Claim(ClaimTypes.Role, obj.role),
+                    //new Claim(ClaimTypes.Role, obj.role),
+                    new Claim("/Permissions", JsonConvert.SerializeObject(obj.permissions)),
                     new Claim("/UserID", obj.user_id.ToString())
                     // Add other claims as needed
                 }),

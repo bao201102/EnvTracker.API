@@ -10,6 +10,6 @@
         public string? email { get; set; }
         public required string password { get; set; }
         public bool is_approved { get; set; }
-        public int role_id { get; set; }
+        public IEnumerable<int> role_ids { get; set; }
     }
 }

@@ -7,6 +7,6 @@
         public string full_name { get; set; }
         public string phone { get; set; }
         public int user_id { get; set; }
-        public string role { get; set; }
+        public object permissions { get; set; }
     }
 }

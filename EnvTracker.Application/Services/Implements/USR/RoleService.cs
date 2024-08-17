@@ -1,10 +1,8 @@
 ﻿using Dapper;
 using EnvTracker.Application.Common;
 using EnvTracker.Application.DTOs.Request.USR.Role;
-using EnvTracker.Application.DTOs.Request.USR.User;
 using EnvTracker.Application.DTOs.Response.Common;
 using EnvTracker.Application.DTOs.Response.USR.Role;
-using EnvTracker.Application.DTOs.Response.USR.User;
 using EnvTracker.Application.Services.Interfaces.USR;
 using EnvTracker.Application.Utilities;
 using EnvTracker.Domain.Interfaces;
@@ -14,9 +12,47 @@ namespace EnvTracker.Application.Services.Implements.USR
 {
     public class RoleService : BaseService, IRoleService
     {
-        public RoleService(IRepository repository)
+        private readonly IPermissionService _permissionService;
+
+        public RoleService(IRepository repository, IPermissionService permissionService)
             : base(repository)
         {
+            _permissionService = permissionService;
+        }
+
+        public async Task<CRUDResult<IEnumerable<RoleRes>>> List()
+        {
+            try
+            {
+                var result = await Repository.QueryStoredProcPgSql<RoleRes>("usr.role_read_all", null, "p_result");
+
+                if (result == null || !result.Any())
+                {
+                    return Error<IEnumerable<RoleRes>>(statusCode: CRUDStatusCodeRes.ResourceNotFound);
+                }
+
+                var permissions = await _permissionService.List();
+
+                if (permissions.StatusCode == CRUDStatusCodeRes.Success
+                    && permissions.Data != null
+                    && permissions.Data.Any())
+                {
+                    foreach (var item in result)
+                    {
+                        item.permissions = permissions.Data.Where(p => item.permission_ids.Contains(p.permission_id));
+                    }
+                }
+
+                return Success(result);
+            }
+            catch (NpgsqlException ex)
+            {
+                return Error<IEnumerable<RoleRes>>(statusCode: CRUDStatusCodeRes.ResetContent, errorMessage: ex.Message.ConvertNpgsqlExceptionMessage());
+            }
+            catch (Exception ex)
+            {
+                return Error<IEnumerable<RoleRes>>(statusCode: CRUDStatusCodeRes.ResetContent, errorMessage: ex.Message);
+            }
         }
 
         public async Task<CRUDResult<RoleRes>> ReadById(int roleId)
@@ -31,6 +67,15 @@ namespace EnvTracker.Application.Services.Implements.USR
                 if (result == null)
                 {
                     return Error<RoleRes>(statusCode: CRUDStatusCodeRes.ResourceNotFound);
+                }
+
+                var permissions = await _permissionService.List();
+
+                if (permissions.StatusCode == CRUDStatusCodeRes.Success
+                    && permissions.Data != null
+                    && permissions.Data.Any())
+                {
+                    result.permissions = permissions.Data.Where(p => result.permission_ids.Contains(p.permission_id));
                 }
 
                 return Success(result);
@@ -58,6 +103,18 @@ namespace EnvTracker.Application.Services.Implements.USR
                     {
                         StatusCode = CRUDStatusCodeRes.ResourceNotFound
                     };
+                }
+
+                var permissions = await _permissionService.List();
+
+                if (permissions.StatusCode == CRUDStatusCodeRes.Success
+                    && permissions.Data != null
+                    && permissions.Data.Any())
+                {
+                    foreach (var item in result)
+                    {
+                        item.permissions = permissions.Data.Where(p => item.permission_ids.Contains(p.permission_id));
+                    }
                 }
 
                 return PagingSuccess(result, obj.page_index, obj.page_size, result.FirstOrDefault().total_record);

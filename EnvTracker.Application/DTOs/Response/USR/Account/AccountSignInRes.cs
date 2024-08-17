@@ -1,4 +1,6 @@
-﻿namespace EnvTracker.Application.DTOs.Response.USR.Account
+﻿using EnvTracker.Application.DTOs.Response.USR.Role;
+
+namespace EnvTracker.Application.DTOs.Response.USR.Account
 {
     public class AccountSignInRes
     {
@@ -8,7 +10,7 @@
         public string last_name { get; set; }
         public string phone { get; set; }
         public string email { get; set; }
-        public int role_id { get; set; }
-        public string role_name { get; set; }
+        public IEnumerable<int> role_ids { get; set; }
+        public IEnumerable<RoleRes> roles { get; set; }
     }
 }

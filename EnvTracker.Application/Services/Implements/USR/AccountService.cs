@@ -2,25 +2,25 @@
 using EnvTracker.Application.Common;
 using EnvTracker.Application.DTOs.Request.USR.Account;
 using EnvTracker.Application.DTOs.Response.Common;
-using EnvTracker.Application.DTOs.Response.STA.Sensor;
 using EnvTracker.Application.DTOs.Response.USR.Account;
 using EnvTracker.Application.Services.Interfaces.USR;
 using EnvTracker.Application.Utilities;
 using EnvTracker.Domain.Entities;
 using EnvTracker.Domain.Interfaces;
 using Npgsql;
-using System.Security.Claims;
 
 namespace EnvTracker.Application.Services.Implements.USR
 {
     public class AccountService : BaseService, IAccountService
     {
         private readonly ITokenService _tokenService;
+        private readonly IRoleService _roleService;
 
-        public AccountService(IRepository repository, ITokenService jwtProvider)
+        public AccountService(IRepository repository, ITokenService jwtProvider, IRoleService roleService)
             : base(repository)
         {
             _tokenService = jwtProvider;
+            _roleService = roleService;
         }
 
         public async Task<CRUDResult<bool>> SignUp(AccountSignUpReq obj)
@@ -78,6 +78,20 @@ namespace EnvTracker.Application.Services.Implements.USR
                     return Error<string>(statusCode: CRUDStatusCodeRes.InvalidData, errorMessage: "Email hoặc mật khẩu không đúng");
                 }
 
+                var roles = await _roleService.List();
+
+                if (roles.StatusCode == CRUDStatusCodeRes.Success
+                    && roles.Data != null
+                    && roles.Data.Any())
+                {
+                    result.roles = roles.Data.Where(p => result.role_ids.Contains(p.role_id));
+                }
+
+                // Lọc ra các permission không trùng lặp
+                var permissions = result.roles
+                    .SelectMany(r => r.permissions) // Gộp tất cả danh sách permissions của các role lại thành một danh sách
+                    .Distinct();
+
                 var token = _tokenService.GenerateToken(new GenerateTokenReq
                 {
                     user_name = result.user_name,
@@ -85,7 +99,7 @@ namespace EnvTracker.Application.Services.Implements.USR
                     full_name = result.first_name + " " + result.last_name,
                     phone = result.phone,
                     user_id = result.user_id,
-                    role = result.role_name
+                    permissions = permissions
                 });
 
                 return Success(token);

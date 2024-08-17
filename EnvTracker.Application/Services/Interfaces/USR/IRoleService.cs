@@ -6,6 +6,7 @@ namespace EnvTracker.Application.Services.Interfaces.USR
 {
     public interface IRoleService : IDisposable
     {
+        Task<CRUDResult<IEnumerable<RoleRes>>> List();
         Task<CRUDResult<RoleRes>> ReadById(int roleId);
         Task<PagingResponse<RoleSearchRes>> Search(RoleSearchReq obj);
         Task<CRUDResult<bool>> Create(RoleCreateReq obj);
